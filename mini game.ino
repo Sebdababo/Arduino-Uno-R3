@@ -5,6 +5,11 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 const int xPin = A0;
 const int yPin = A1;
 const int swPin = 2;
+
+const int xPin2 = A5;
+const int yPin2 = A4;
+const int swPin2 = 4; 
+
 const int buttonPin = 3;
 const int ledPin = 9;
 
@@ -42,15 +47,20 @@ void setup() {
     lcd.backlight();
     lcd.createChar(0, manCharacter);
     lcd.createChar(1, pointCharacter);
+
     pinMode(swPin, INPUT_PULLUP);
+    pinMode(swPin2, INPUT_PULLUP);
     pinMode(buttonPin, INPUT_PULLUP);
     pinMode(ledPin, OUTPUT);
+
     redraw();
 }
 
 void loop() {
     updatePlayer();
+    updatePoint();
     checkCollision();
+
     if (pointEaten) {
         pointEaten = false;
         digitalWrite(ledPin, HIGH);
@@ -90,6 +100,29 @@ void updatePlayer() {
         playerX = 10;
         playerY = 3;
         score = 0;
+    }
+
+    redraw();
+}
+
+void updatePoint() {
+    int xVal = analogRead(xPin2);
+    int yVal = analogRead(yPin2);
+    
+    if (xVal < 100 && pointX < 19) {
+        pointX++;
+    } else if (xVal > 900 && pointX > 0) {
+        pointX--;
+    }
+    
+    if (yVal > 900 && pointY < 3) {
+        pointY++;
+    } else if (yVal < 100 && pointY > 0) {
+        pointY--;
+    }
+
+    if (selPressed2){
+        newPoint();
     }
 
     redraw();
